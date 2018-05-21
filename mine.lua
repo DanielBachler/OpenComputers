@@ -1,8 +1,6 @@
 --[
 --  !TODO
---  Command line size for mine
---  Communication with base
--- Smart dirt mining
+--  control from base with wireless
 --]
 
 --[Setting up needed vars --]
@@ -53,7 +51,7 @@ function move(side)
   success = moveS(side)
   if success then
     --nothing
-  else 
+  else
     dig(side)
     move(side)
   end
@@ -70,12 +68,27 @@ function digS(side)
   end
 end
 
+--Compares in given direction
+function compareS(side)
+  if side == sides.forward then
+    return robot.compare()
+  elseif side == sides.down then
+    return robot.compareDown()
+  elseif side == sides.up then
+    return robot.compareUp()
+  end
+end
+
 --[Selects the right tool to dig a block--]
-function dig(side) 
+function dig(side)
   --[Checks if gravel, if so equips shovel and swings then puts hammer back, otherwise just swings hammer--]
   robot.select(28)
-  isGravel = robot.compare()
-  if isGravel then
+  isGravel = robot.compareS(side)
+  --Checks for dirt
+  robot.select(27)
+  isDirt = robot.compareS(side)
+  --Mines with the apporiate tool
+  if isGravel or isDirt then
     robot.select(29)
     inv.equip()
     robot.select(28)
@@ -84,7 +97,6 @@ function dig(side)
     inv.equip()
   else
     digS(side)
-    print("Not Gravel")
   end
 end
 
@@ -117,9 +129,9 @@ function dumpItems()
     else
       inv.dropIntoSlot(sides.front, i - 5)
     end
-  end  
+  end
   robot.select(31)
-  dig(sides.forward)  
+  dig(sides.forward)
 end
 
 --[Sets up enderchest--]
@@ -209,4 +221,4 @@ function mine(size)
   end
 end
 
-mine(100)
+mine(arg[1])
