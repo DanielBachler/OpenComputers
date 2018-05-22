@@ -225,6 +225,7 @@ end
 
 --[Dumps items into ender chest--]
 function dumpItems()
+  refuel()
   robot.select(enderChest)
   robot.place()
   for i = 1, invStart, 1  do
@@ -232,71 +233,11 @@ function dumpItems()
     if i < 28 then
       inv.dropIntoSlot(sides.front, i)
     else
-      inv.dropIntoSlot(sides.front, i - 5)
+      inv.dropIntoSlot(sides.front, math.floor(i / 2))
     end
   end
   robot.select(enderChest)
-  dig(sides.forward)
-end
-
---[Sets up enderchest--]
-function setUpEnder()
-  refuel()
-  move(sides.back)
-  move(sides.down)
-  robot.select(dirt)
-  robot.place()
-  move(sides.up)
-  dumpItems()
-end
-
---[Mines a 3x3 in front--]
-function threeXthree()
-  dig(sides.forward)
-  move(sides.forward)
-  robot.turnRight()
-  dig(sides.forward)
-  dig(sides.down)
-  dig(sides.up)
-  move(sides.down)
-  dig(sides.forward)
-  robot.turnRight()
-  robot.turnRight()
-  dig(sides.forward)
-  move(sides.up)
-  dig(sides.forward)
-  move(sides.up)
-  dig(sides.forward)
-  robot.turnRight()
-  robot.turnRight()
-  dig(sides.forward)
-  robot.turnLeft()
-  move(sides.down)
-end
-
---[Resets for a new row--]
-function newRow(dir)
-  if dir % 2 == 0 then
-    robot.back()
-    robot.turnLeft()
-    move(sides.forward)
-    threeXthree()
-    threeXthree()
-    threeXthree()
-    robot.back()
-    robot.turnLeft()
-    move(sides.forward)
-  else
-    robot.back()
-    robot.turnRight()
-    move(sides.forward)
-    threeXthree()
-    threeXthree()
-    threeXthree()
-    robot.back()
-    robot.turnRight()
-    move(sides.forward)
-  end
+  digS(sides.forward)
 end
 
 --[Checks inventory for empty slot--]
@@ -314,16 +255,11 @@ end
 --[Mines a square of the given size--]
 function mine(size)
   refuel()
-  for y = 0, size, 3 do
-    for x = 0, size, 1 do
-      threeXthree()
-      full = checkInv()
-      if full then
-        setUpEnder()
-      end
+  for i = 1, size, 1 do
+    for j = 0, size, 1 do
+      dig(sides.front)
     end
-    repairItems()
-    newRow(y)
+    refuel()
   end
 end
 
