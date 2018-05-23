@@ -3,6 +3,10 @@
 --  control from base with wireless
 --  check energy for refuel
 --]
+--test  
+
+--dist to mine, at top for convenience
+toMine = 10
 
 --List of slots used by program and what they are
 coal = 32
@@ -14,14 +18,17 @@ dirt = 27
 lapis = 26
 diamond = 25
 repairChest = 24
-invStart = 23
+redstone = 23
+invStart = 22
 
 --[Setting up needed vars --]
 local robot = require("robot")
 local component = require("component")
+local sides = require("sides")
+local computer = require("computer")
 local gen = component.generator
 local inv = component.inventory_controller
-local sides = require("sides")
+
 
 --[Scans inventory at given slot and attempts to refill--]
 function refillItem(slot)
@@ -117,6 +124,15 @@ function repairItems()
   end
 end
 
+--Checks if the robot needs fuel
+function needFuel()
+  energyRatio = computer.energy() / computer.maxEnergy()
+  print(energyRatio)
+  if energyRatio < 0.5 then
+    refuel()
+  end
+end
+
 --Moves the robot in the indicated direction
 function moveS(side)
   moved = false
@@ -180,8 +196,12 @@ function dig(side)
   --Checks for lapis and diamond
   robot.select(diamond)
   fortune = compareS(side)
-  if ~fortune then
+  if fortune == false then
     robot.select(lapis)
+    fortune = compareS(side)
+  end
+  if fortune == false then
+    robot.select(redstone)
     fortune = compareS(side)
   end
   --Mines with the apporiate tool
@@ -317,6 +337,7 @@ function mine(size)
   for y = 0, size, 3 do
     for x = 0, size, 1 do
       threeXthree()
+      needFuel()
       full = checkInv()
       if full then
         setUpEnder()
@@ -327,4 +348,4 @@ function mine(size)
   end
 end
 
-mine(arg[1])
+mine(toMine)
