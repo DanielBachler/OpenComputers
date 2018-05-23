@@ -3,7 +3,7 @@
 --  control from base with wireless
 --  check energy for refuel
 --]
---test  
+--test
 
 --dist to mine, at top for convenience
 toMine = 10
@@ -274,24 +274,19 @@ end
 function threeXthree()
   dig(sides.forward)
   move(sides.forward)
-  robot.turnRight()
-  dig(sides.forward)
-  dig(sides.down)
   dig(sides.up)
-  move(sides.down)
-  dig(sides.forward)
-  robot.turnRight()
+  dig(sides.down)
   robot.turnRight()
   dig(sides.forward)
-  move(sides.up)
-  dig(sides.forward)
-  move(sides.up)
-  dig(sides.forward)
-  robot.turnRight()
-  robot.turnRight()
-  dig(sides.forward)
-  robot.turnLeft()
-  move(sides.down)
+  move(sides.forward)
+  dig(sides.up)
+  dig(sides.down)
+  move(sides.back)
+  move(sides.back)
+  dig(sides.up)
+  dig(sides.down)
+  move(sides.forward)
+  robot.turnLeft()  
 end
 
 --[Resets for a new row--]
