@@ -1,9 +1,7 @@
 --[
 --  TODO
 --  control from base with wireless
---  dump extra silked touch blocks
 --]
---test
 
 --dist to mine, at top for convenience
 toMine = 300
@@ -29,6 +27,32 @@ local computer = require("computer")
 local gen = component.generator
 local inv = component.inventory_controller
 
+--Removes the extra items from the silk touched block slots
+--Assumes that inventory has been emptied
+function clearExcess()
+	--Getting amount of silked items
+	--Diamonds
+	diamondCount = robot.count(diamond)
+	--Lapis
+	lapisCount = robot.count(lapis)
+	--Redstone
+	redstoneCount = robot.count(redstone)
+	--Removes excess diamonds
+	if diamondCount > 1 then
+		robot.select(diamond)
+		robot.transferTo(1, diamondCount - 1)
+	end
+	--Removes excess lapis
+	if lapisCount > 1 then
+		robot.select(lapis)
+		robot.transferTo(1, lapisCount - 1)
+	end
+	--Removes excess redstone
+	if redstoneCount > 1 then
+		robot.select(redstone)
+		robot.transferTo(1, redstoneCount - 1)
+	end
+end
 
 --[Scans inventory at given slot and attempts to refill--]
 function refillItem(slot)
@@ -250,6 +274,12 @@ end
 
 --[Dumps items into ender chest--]
 function dumpItems()
+	refuel()
+  move(sides.back)
+  move(sides.down)
+  robot.select(dirt)
+  robot.place()
+  move(sides.up)
   robot.select(enderChest)
   robot.place()
   for i = 1, invStart, 1  do
@@ -260,19 +290,10 @@ function dumpItems()
       inv.dropIntoSlot(sides.front, i - 5)
     end
   end
+	clearExcess()
   robot.select(enderChest)
   dig(sides.forward)
-end
-
---[Sets up enderchest--]
-function setUpEnder()
-  refuel()
-  move(sides.back)
-  move(sides.down)
-  robot.select(dirt)
-  robot.place()
-  move(sides.up)
-  dumpItems()
+	move(sides.forward)
 end
 
 --[Mines a 3x3 in front--]
@@ -345,7 +366,7 @@ function mine(size)
       needFuel()
       full = checkInv()
       if full then
-        setUpEnder()
+        dumpItems()
       end
     end
     repairItems()
