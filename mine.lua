@@ -1,12 +1,12 @@
 --[
 --  TODO
 --  control from base with wireless
---  check energy for refuel
+--  dump extra silked touch blocks
 --]
 --test
 
 --dist to mine, at top for convenience
-toMine = 10
+toMine = 300
 
 --List of slots used by program and what they are
 coal = 32
@@ -51,27 +51,24 @@ function repairItems()
   repairShovel = false
   repairPick = false
   --Gets durability of hammer
-  temp, hammerCurrent, hammerMax = robot.durability()
-  hammerRatio = hammerCurrent / hammerMax
-  if hammerRatio < 0.5 then
+  hammerDur = robot.durability()
+  if hammerDur < 0.5 then
     repairHammer = true
   end
   --Gets durability of shovel
   robot.select(shovel)
-  robot.equip()
-  temp, shovelCurrent, shovelMax = robot.durability()
-  shovelRatio = shovelCurrent / shovelMax
-  robot.equip()
-  if shovelRatio < 0.5 then
+  inv.equip()
+  shovelDur = robot.durability()
+  inv.equip()
+  if shovelDur < 0.5 then
     repairShovel = true
   end
   --Gets durability of fortune pick
   robot.select(fortunePick)
-  robot.equip()
-  temp, pickCurrent, pickMax = robot.durability()
-  pickRatio = pickCurrent / pickMax
-  robot.equip()
-  if pickRatio < 0.5 then
+  inv.equip()
+  pickDur = robot.durability()
+  inv.equip()
+  if pickDur < 0.5 then
     repairPick = true
   end
   --All ratios gathered, now tools needing repair are placed into ender enderChest
@@ -91,7 +88,7 @@ function repairItems()
       robot.select(dirt)
       inv.equip()
       inv.dropIntoSlot(sides.front, 1)
-      for i = 0, 1000, 1 do
+      for i = 0, 100000, 1 do
         --Loops to kill time
       end
       while inv.getStackInInternalSlot(dirt) == nil do
@@ -103,7 +100,7 @@ function repairItems()
     if repairShovel then
       robot.select(shovel)
       inv.dropIntoSlot(sides.front, 1)
-      for i = 0, 1000, 1 do
+      for i = 0, 100000, 1 do
         --killing time
       end
       while inv.getStackInInternalSlot(shovel) == nil do
@@ -114,13 +111,21 @@ function repairItems()
     if repairPick then
       robot.select(fortunePick)
       inv.dropIntoSlot(sides.front, 1)
-      for i = 0, 1000, 1 do
+      for i = 0, 100000, 1 do
         --killing time
       end
       while inv.getStackInInternalSlot(fortunePick) == nil do
         inv.suckFromSlot(sides.front, 1)
       end
     end
+    --Gets chest and dirt back
+    robot.select(repairChest)
+    dig(sides.forward)
+    move(sides.down)
+    robot.select(dirt)
+    dig(sides.forward)
+    move(sides.up)
+    move(sides.forward)
   end
 end
 
@@ -281,10 +286,15 @@ function threeXthree()
   move(sides.forward)
   dig(sides.up)
   dig(sides.down)
-  move(sides.back)
-  move(sides.back)
+  robot.turnLeft()
+  robot.turnLeft()
+  move(sides.forward)
+  dig(sides.forward)
+  move(sides.forward)
   dig(sides.up)
   dig(sides.down)
+  robot.turnRight()
+  robot.turnRight()
   move(sides.forward)
   robot.turnLeft()  
 end
