@@ -1,0 +1,4 @@
+--	TODO
+--	Get named waypoints within range, call upon master computer in dimension that knows absolute position of them
+--	Triangulate position from this information
+--	Use for master mining control?
