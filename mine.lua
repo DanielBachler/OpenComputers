@@ -1,6 +1,9 @@
 --[
 --  TODO
 --  control from base with wireless
+--  deal with oil shale
+--  deal with beehives?
+--  make sure chunkloader is enabled
 --]
 
 --dist to mine, at top for convenience
