@@ -1,26 +1,25 @@
 --[
 --  TODO
 --  control from base with wireless
---  deal with oil shale
---  deal with beehives?
---  make sure chunkloader is enabled
 --]
 
 --dist to mine, at top for convenience
 toMine = 300
 
 --List of slots used by program and what they are
-coal = 32
+repairChest = 32
 enderChest = 31
 fortunePick = 30
 shovel = 29
 gravel = 28
-dirt = 27
-lapis = 26
-diamond = 25
-repairChest = 24
+shale = 27
+dirt = 26
+lapis = 25
+diamond = 24
 redstone = 23
-invStart = 22
+coal = 22
+scoop = 21
+invStart = 20
 
 --[Setting up needed vars --]
 local robot = require("robot")
@@ -29,6 +28,7 @@ local sides = require("sides")
 local computer = require("computer")
 local gen = component.generator
 local inv = component.inventory_controller
+local loader = component.chunkloader
 
 --Removes the extra items from the silk touched block slots
 --Assumes that inventory has been emptied
@@ -197,13 +197,22 @@ end
 
 --Digs to the side specified
 function digS(side)
+	temp = true
   if side == sides.forward then
-    robot.swing()
+    temp = robot.swing()
   elseif side == sides.up then
-    robot.swingUp()
+    temp = robot.swingUp()
   elseif side == sides.down then
-    robot.swingDown()
+    temp = robot.swingDown()
   end
+	--If robot cannot break item, most likely a beehive, so use scoop
+	if temp then
+		robot.select(scoop)
+		robot.equip()
+		digS(side)
+		robot.equip()
+		robot.select(1)
+	end
 end
 
 --Compares in given direction
@@ -225,6 +234,9 @@ function dig(side)
   --Checks for dirt
   robot.select(dirt)
   isDirt = compareS(side)
+	--Checks for oil shale
+	robot.select(shale)
+	isShale = compareS(side)
   --Checks for lapis and diamond
   robot.select(diamond)
   fortune = compareS(side)
@@ -238,7 +250,7 @@ function dig(side)
   end
   --Mines with the apporiate tool
   --Digs gravel and dirt with a shovel
-  if isGravel or isDirt then
+  if isGravel or isDirt or isShale then
     robot.select(shovel)
     inv.equip()
     robot.select(gravel)
@@ -377,4 +389,6 @@ function mine(size)
   end
 end
 
+--Enables chunkloader
+loader.setActive(true)
 mine(toMine)
